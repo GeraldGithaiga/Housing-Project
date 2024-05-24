@@ -1,0 +1,103 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/EstherNjuguna/AICE/blob/main/Web%20Scraping\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "id": "ZZNOiWvrz3YC"
+      },
+      "outputs": [],
+      "source": [
+        "from bs4 import BeautifulSoup\n",
+        "import requests"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "HhoTCkC00HoO",
+        "outputId": "a492fc9c-b9b7-4c71-f330-897da300e1ee"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Request successful!\n",
+            "Number of entries found: 0\n"
+          ]
+        }
+      ],
+      "source": [
+        "\n",
+        "url = \"https://icd.who.int/browse/2024-01/mms/en\"\n",
+        "\n",
+        "# Parameters for cardiovascular diseases\n",
+        "params = {\n",
+        "    \"lm\": \"Chapter11\",\n",
+        "    \"ln\": \"en\",\n",
+        "    \"rf\": \"true\"\n",
+        "}\n",
+        "\n",
+        "# Send the request and get the response\n",
+        "response = requests.get(url, params=params)\n",
+        "\n",
+        "# Check if the request was successful\n",
+        "if response.status_code == 200:\n",
+        "    print(\"Request successful!\")\n",
+        "\n",
+        "    # Parse the response HTML data\n",
+        "    soup = BeautifulSoup(response.text, \"html.parser\")\n",
+        "\n",
+        "    # Find all the entries\n",
+        "    entries = soup.select(\".browserBodyRightContent\")\n",
+        "\n",
+        "    print(f\"Number of entries found: {len(entries)}\")\n",
+        "\n",
+        "    # Loop through the entries\n",
+        "    for entry in entries:\n",
+        "        title_element = entry.select_one(\".browserBodyTitle\")\n",
+        "        name = title_element.text.strip() if title_element else \"No title found\"\n",
+        "\n",
+        "        description_element = entry.select_one(\".property\")\n",
+        "        description = description_element.text.strip() if description_element else \"No description found\"\n",
+        "\n",
+        "        print(f\"Name: {name}\")\n",
+        "        print(f\"Description: {description}\")\n",
+        "        print(\"-\" * 50)\n",
+        "else:\n",
+        "    print(f\"Error: Unable to fetch data from the API. Status code: {response.status_code}\")"
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPWOlTMSC9OP2/U9ZoHHVDZ",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
